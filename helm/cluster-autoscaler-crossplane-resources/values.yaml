@@ -1,0 +1,19 @@
+# -- Provider settings.
+# @default -- See below.
+provider:
+  # -- Provider name.
+  name: ""
+
+# -- Cluster settings.
+# @default -- See below.
+cluster:
+  # -- Cluster name.
+  name: ""
+
+# -- Service account settings.
+# @default -- See below.
+serviceAccount:
+  # -- Service account name.
+  name: cluster-autoscaler
+  # -- Service account namespace.
+  namespace: kube-system
