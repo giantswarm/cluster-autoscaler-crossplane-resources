@@ -29,7 +29,7 @@ helm.sh/chart: {{ include "cluster-autoscaler-crossplane-resources.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-giantswarm.io/service-type: "managed"
+giantswarm.io/service-type: managed
 application.giantswarm.io/team: {{ index .Chart.Annotations "application.giantswarm.io/team" | quote }}
 {{- end }}
 
