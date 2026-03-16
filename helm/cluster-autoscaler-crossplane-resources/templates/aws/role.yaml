@@ -1,0 +1,69 @@
+{{- if eq .Values.provider.name "aws" -}}
+{{- $values := include "cluster-autoscaler-crossplane-resources.aws.crossplane-config-values" . | fromYaml -}}
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: {{ .Values.cluster.name }}-cluster-autoscaler
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "cluster-autoscaler-crossplane-resources.labels" . | nindent 4 }}
+spec:
+  providerConfigRef:
+    name: {{ .Values.cluster.name | quote }}
+  forProvider:
+    tags:
+      giantswarm.io/cluster: {{ .Values.cluster.name | quote }}
+      sigs.k8s.io/cluster-api-provider-aws/cluster/{{ .Values.cluster.name }}: owned
+    assumeRolePolicy: |-
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {{- range $index, $domain := $values.oidcDomains }}
+          {{- if gt $index 0 }},{{ end }}
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "arn:{{ $values.awsPartition }}:iam::{{ $values.accountID }}:oidc-provider/{{ $domain }}"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "{{ $domain }}:sub": "system:serviceaccount:{{ $.Values.serviceAccount.namespace }}:{{ $.Values.serviceAccount.name }}"
+              }
+            }
+          }
+          {{- end }}
+        ]
+      }
+    inlinePolicy:
+    - name: cluster-autoscaler
+      policy: |-
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeLaunchConfigurations",
+                "autoscaling:DescribeScalingActivities",
+                "ec2:DescribeImages",
+                "ec2:DescribeInstanceTypes",
+                "ec2:DescribeLaunchTemplateVersions",
+                "ec2:GetInstanceTypesFromInstanceRequirements",
+                "eks:DescribeNodegroup"
+              ],
+              "Resource": ["*"]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "autoscaling:SetDesiredCapacity",
+                "autoscaling:TerminateInstanceInAutoScalingGroup"
+              ],
+              "Resource": ["*"]
+            }
+          ]
+        }
+{{- end }}
