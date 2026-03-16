@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-03-16
+
 ### Added
 
 - Chart: Add IAM role.
@@ -15,4 +17,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - CircleCI: Push to `cluster-catalog`.
 
-[Unreleased]: https://github.com/giantswarm/cluster-autoscaler-crossplane-resources/tree/main
+[Unreleased]: https://github.com/giantswarm/cluster-autoscaler-crossplane-resources/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/giantswarm/cluster-autoscaler-crossplane-resources/releases/tag/v1.0.0
